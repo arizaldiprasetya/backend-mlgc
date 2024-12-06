@@ -12,15 +12,20 @@ function modelData(doc) {
 	};
 }
 
+async function database() {
+	const settings = {
+		projectId: process.env.PROJECT_ID,
+	};
+	return new Firestore(process.env.APP_ENV === "local" ? settings : undefined);
+}
+
 async function storeData(id, data) {
-	const db = new Firestore();
-   
-	const predictCollection = db.collection('predictions');
+	const predictCollection = (await database()).collection("predictions");
 	return predictCollection.doc(id).set(data);
-  }
+}
 
 async function getData(id = null) {
-	const predictCollection = db.collection('predictions');
+	const predictCollection = (await database()).collection("predictions");
 	if (id) {
 		const doc = await predictCollection.doc(id).get();
 		if (!doc.exists) return null;
